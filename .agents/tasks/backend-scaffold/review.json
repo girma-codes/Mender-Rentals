@@ -1,0 +1,36 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "label": "Auth routes missing try/catch",
+      "detail": "POST /api/auth/signup and POST /api/auth/login have no try/catch. A pg error propagates as an unhandled rejection, reaching the errorHandler which returns the raw error message (table names, connection detail) in the 500 response. Wrap both bodies in try/catch."
+    },
+    {
+      "severity": "MEDIUM",
+      "label": "errorHandler leaks internal error messages",
+      "detail": "errorHandler forwards err.message verbatim for any Error instance. pg errors include constraint names, connection strings, and query fragments. Distinguish AppError (safe message) from unexpected errors (generic 'Internal server error.' string, detail logged server-side only)."
+    },
+    {
+      "severity": "MEDIUM",
+      "label": "Equipment routes missing try/catch",
+      "detail": "All five handlers in equipment.ts perform await query() with no try/catch. Same unhandled-rejection and information-disclosure risk as the auth routes."
+    },
+    {
+      "severity": "MEDIUM",
+      "label": "Rentals routes missing try/catch",
+      "detail": "All four handlers in rentals.ts have no try/catch. The PATCH /:id/status handler makes two sequential queries; a failure on the second leaves the client with an unhandled rejection."
+    },
+    {
+      "severity": "LOW",
+      "label": "Mock auth accepts any password in DEV",
+      "detail": "The login mock fallback in AuthContext verifies only that the email was previously registered, never the password. import.meta.env.DEV is set by Vite build mode, not runtime environment, so a 'vite build --mode development' ships this bypass to production. Gate on window.location.hostname === 'localhost' or store and verify the password in the mock path."
+    },
+    {
+      "severity": "LOW",
+      "label": "Seed script has no production guard",
+      "detail": "seed.ts writes a known-credential lender account (demo@mender.et / demo1234) with no check preventing it from running against production. Add a NODE_ENV !== 'production' guard that exits non-zero, and add an explicit warning in the README."
+    }
+  ],
+  "reviewDoc": "d:\\kiro project\\po\\mender-rentals-platform\\.agents\\tasks\\backend-scaffold\\review.md"
+}

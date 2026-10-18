@@ -1,0 +1,29 @@
+{
+  "project_type": "React 19 + TypeScript + Vite + Tailwind CSS SPA — event equipment rental marketplace",
+  "language": "TypeScript (strict: true, noUnusedLocals: true, noUnusedParameters: true)",
+  "build_system": "Vite 8 + tsc -b composite build. Path alias @/ maps to src/. No test framework exists. Quirk: tsconfig uses 'erasableSyntaxOnly' — avoid const enums.",
+  "test_framework": "None — verification is type-check + production build only.",
+  "build_command": "npm run build",
+  "test_command": "npx tsc -b --noEmit",
+  "verification_instructions": "1. Run `npx tsc -b --noEmit` — must produce zero errors. 2. Run `npm run build` — must complete with no type errors and no Vite build errors. No test suite exists.",
+  "snapshot_or_generated_files": null,
+  "environment_constraints": "Windows PowerShell. No new npm packages allowed — only lucide-react, react-router-dom v7, and Tailwind CSS already installed. Dev server not relevant for verification.",
+  "contribution_requirements": "TypeScript strict mode enforced. Dark theme using neutral-950 bg, neutral-900 cards, emerald-400/500 accents (see tailwind.config.js). Responsive mobile-first. No implicit any.",
+  "key_patterns": "Components use named exports (e.g. `export function Foo`). Path alias @/ for src/. Tailwind utility classes directly on JSX. localStorage pattern: JSON.parse in try/catch (see storageService.ts). Hooks pattern: custom hooks in src/hooks/. Context pattern: context files in src/context/ (new dir). Button variants via VARIANT_CLASSES Record (Button.tsx). Badge is a reusable span with emerald pill styling but dashboard needs custom status badge colors (inline Tailwind per status). useModal pattern in hooks/useModal.ts for modals in Layout.tsx. Outlet context used to pass listings+modal openers down to pages.",
+  "relevant_files": [
+    "src/main.tsx",
+    "src/App.tsx",
+    "src/components/Navbar.tsx",
+    "src/components/Layout.tsx",
+    "src/pages/SignInPage.tsx",
+    "src/types/index.ts",
+    "src/data/seedData.ts",
+    "src/components/ui/Button.tsx",
+    "src/components/ui/Badge.tsx",
+    "src/services/storageService.ts",
+    "src/hooks/useListings.ts",
+    "tailwind.config.js",
+    "tsconfig.app.json"
+  ],
+  "directory_structure": "src/: App.tsx (router root), main.tsx (entry), context/ (new — for AuthContext), components/ (Navbar, Layout, ProtectedRoute, ui/Button, ui/Badge, modals/, sections/), pages/ (HomePage, MarketplacePage, SignInPage, ItemDetailPage, HowItWorksPage, ContactPage, ListItemPage — DashboardPage is new), hooks/ (useListings, useModal), services/ (storageService), data/ (seedData), types/ (index.ts), utils/ (filters.ts)"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Dashboard page: replace the placeholder DashboardPage from FEAT-001 with the full dark-themed Dashboard. Depends on FEAT-001 (types and AuthContext) and FEAT-002 (no hard dep but sequential). Includes My Bookings tab and My Equipment tab with Approve/Reject on incoming requests.",
+  "status": "completed",
+  "steps": [
+    "Step 1 — Implement src/pages/DashboardPage.tsx fully (replacing the placeholder stub from FEAT-001). Imports: useAuth from @/context/AuthContext; useSearchParams from react-router-dom; useState from react; Booking, EquipmentItem, IncomingRequest from @/types. Define MOCK_BOOKINGS (Booking[], 5 items: 2 Pending, 1 Confirmed, 1 Completed, 1 Cancelled), MOCK_EQUIPMENT (EquipmentItem[], 3 items: Active/Inactive/Active), INITIAL_REQUESTS (IncomingRequest[], 4 items all Pending) — see auth-plan.md for exact data values. Component state: const [requests, setRequests] = useState<IncomingRequest[]>(INITIAL_REQUESTS); const [searchParams, setSearchParams] = useSearchParams(); const activeTab = searchParams.get('tab') ?? 'bookings'. Guard: const { user } = useAuth(); if (!user) return null (strict null safety). Stats: totalBookings = MOCK_BOOKINGS.length, activeListings = MOCK_EQUIPMENT.filter(e => e.status === 'Active').length, pendingRequests = requests.filter(r => r.requestStatus === 'Pending').length.",
+    "Step 2 — Page header section: outer div bg-neutral-950 min-h-screen, inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8. Header row: avatar circle (flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold text-sm) showing user.avatarInitials, beside it 'Welcome back,' in text-neutral-400 and user.name in text-2xl font-bold text-white.",
+    "Step 3 — Stats row: flex gap-4 flex-wrap sm:flex-nowrap. Three cards each bg-neutral-900 border border-neutral-800 rounded-xl p-5. Card 1: label 'Total Bookings', value = totalBookings, icon or accent text-emerald-400. Card 2: 'Active Listings', value = activeListings. Card 3: 'Pending Requests', value = pendingRequests.",
+    "Step 4 — Tab switcher: two pill buttons. Active: bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-full px-5 py-2 text-sm font-medium. Inactive: text-neutral-400 hover:text-white rounded-full px-5 py-2 text-sm. On click call setSearchParams({ tab: 'bookings' }) or setSearchParams({ tab: 'equipment' }).",
+    "Step 5 — My Bookings tab content (activeTab === 'bookings'): Mobile — render MOCK_BOOKINGS as stacked cards (bg-neutral-900 border border-neutral-800 rounded-xl p-4 space-y-1.5 md:hidden). Desktop — hidden on mobile, table on md+: overflow-x-auto wrapper, <table className='w-full text-sm text-left hidden md:table'>, thead with columns: Item, Dates, Cost (ETB), Lender, Location, Status. tbody rows with text-neutral-300. Status badge: inline <span> with bookingStatusClasses(booking.status) applied, text-xs font-medium px-2.5 py-0.5 rounded-full. Define bookingStatusClasses as a function inside the component that returns the right Tailwind classes string based on status value (see auth-plan.md).",
+    "Step 6 — My Equipment tab content (activeTab === 'equipment'): Listed items section — grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4. Each card: bg-neutral-900 border border-neutral-800 rounded-xl p-4. Shows name (text-white font-medium), price/day (text-emerald-400), status badge (Active = emerald pill, Inactive = neutral pill), views count (text-neutral-500 text-xs). Incoming requests section below: heading 'Incoming Requests'. Table (overflow-x-auto) or stacked cards on mobile: columns Renter, Item, Dates, Status, Actions. Actions: Approve button (bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25 rounded-lg px-3 py-1.5 text-xs font-medium) and Reject button (bg-red-500/15 text-red-400 border border-red-500/30 hover:bg-red-500/25 rounded-lg px-3 py-1.5 text-xs font-medium). Both call handleRequestAction(r.id, 'Approved'|'Rejected'). When requestStatus is not 'Pending', show the status as a colored badge instead of buttons (Approved = emerald, Rejected = red).",
+    "Step 7 — Implement handleRequestAction: setRequests(prev => prev.map(r => r.id === id ? { ...r, requestStatus: action } : r)). Ensure the action parameter is typed as 'Approved' | 'Rejected'."
+  ],
+  "acceptance_criteria": [
+    "npx tsc -b --noEmit produces zero errors",
+    "npm run build succeeds",
+    "Navigating to /dashboard while authenticated shows the welcome header with the user's name",
+    "Stats row shows correct counts derived from mock data",
+    "My Bookings tab shows all 5 bookings with correct color-coded status badges",
+    "My Equipment tab shows 3 equipment cards and 4 incoming requests",
+    "Clicking Approve/Reject updates the request status in the UI without page reload",
+    "?tab=equipment URL param switches to the equipment tab directly",
+    "Page is responsive: cards stack on mobile, tables have overflow-x-auto on small screens"
+  ],
+  "verification": [
+    "npx tsc -b --noEmit",
+    "npm run build"
+  ],
+  "blocked_reason": null,
+  "findings": "No git repository found — commit step skipped (consistent with FEAT-001 and FEAT-002). Replaced the placeholder DashboardPage stub with the full implementation. MOCK_BOOKINGS (5 items: 2 Pending, 1 Confirmed, 1 Completed, 1 Cancelled), MOCK_EQUIPMENT (3 items: 2 Active, 1 Inactive), INITIAL_REQUESTS (4 items, all Pending) defined as typed const arrays at module level. Component uses useSearchParams for tab state (?tab=bookings default, ?tab=equipment). Stats derived from mock data. bookingStatusClasses and requestStatusClasses helper functions return Tailwind class strings via Record maps. My Bookings tab renders stacked cards on mobile (md:hidden) and a full table on desktop (hidden md:block overflow-x-auto). My Equipment tab renders a 3-column card grid for listed items, then Incoming Requests section with mobile cards and desktop table; Approve/Reject buttons call handleRequestAction which updates request state via setRequests. Guard: if (!user) return null satisfies strict null check. npx tsc -b --noEmit: zero errors. npm run build: succeeded (1948 modules, no type errors)."
+}

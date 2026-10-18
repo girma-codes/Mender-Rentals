@@ -1,0 +1,26 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Auth UI: update SignInPage for smart redirect with loading state, and update Navbar with authenticated profile dropdown. This feature depends on FEAT-001 (AuthContext and types must exist first).",
+  "status": "completed",
+  "steps": [
+    "Step 1 — Update src/pages/SignInPage.tsx: import useAuth from @/context/AuthContext. Add const [isLoading, setIsLoading] = useState(false). Make handleSubmit async. After validation passes: setIsLoading(true), await auth.login(email, password), capture destination = auth.intendedPath ?? '/dashboard', call auth.setIntendedPath(null), navigate(destination), in finally block setIsLoading(false). Remove the old navigate('/marketplace') call. Update the submit button: add disabled={isLoading} and className with disabled:opacity-60 disabled:cursor-not-allowed. Show 'Signing in…' text when isLoading is true, 'Sign In' otherwise.",
+    "Step 2 — Update src/components/Navbar.tsx: import useAuth from @/context/AuthContext. Import useRef and useEffect (useState is already imported). Add const auth = useAuth(). Add const [dropdownOpen, setDropdownOpen] = useState(false) and const dropdownRef = useRef<HTMLDivElement>(null). Add useEffect for outside-click detection: document.addEventListener('mousedown', handleClickOutside), cleanup on unmount. In the desktop actions section, replace the Sign In link with a conditional: if auth.isAuthenticated && auth.user, render the avatar trigger button + absolute dropdown menu inside a <div className='relative' ref={dropdownRef}>. Trigger: rounded avatar button showing user.avatarInitials (bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold h-8 w-8 rounded-full), user's first name (user.name.split(' ')[0]), and an inline chevron-down SVG. Dropdown: absolute right-0 mt-2 w-56 bg-neutral-900 border border-neutral-800 rounded-xl shadow-xl z-50 — header with full name + email (non-clickable), divider, Links to /dashboard / /dashboard?tab=bookings / /dashboard?tab=equipment (each closes dropdown on click), divider, Logout button (calls auth.logout() + setDropdownOpen(false), text-red-400). When not authenticated, show the existing Sign In link unchanged. In mobile menu section: when authenticated show avatar + name + the same three nav links inline (no nested dropdown — just list them in the mobile menu stack) + Logout button. When not authenticated show the existing Sign In link. Keep the onOpenListItemModal prop and 'List Your Item' button exactly as they are."
+  ],
+  "acceptance_criteria": [
+    "npx tsc -b --noEmit produces zero errors",
+    "npm run build succeeds",
+    "Signing in navigates to /dashboard (or intendedPath if set)",
+    "Submit button shows 'Signing in…' and is disabled during the 500ms mock delay",
+    "When authenticated, Navbar shows avatar + first name + chevron instead of Sign In link",
+    "Dropdown opens on trigger click and closes on outside click",
+    "Logout clears auth state and navigates to /",
+    "Mobile menu shows authenticated user links when logged in"
+  ],
+  "verification": [
+    "npx tsc -b --noEmit",
+    "npm run build"
+  ],
+  "blocked_reason": null,
+  "findings": "No git repository found — commit step skipped (consistent with FEAT-001). SignInPage (Step 1) was already fully implemented by FEAT-001 work: it had useAuth, isLoading state, async handleSubmit with smart redirect, and the disabled button with 'Signing in…' text. Only Navbar (Step 2) needed new work. Updated Navbar.tsx to import useAuth, useRef, useEffect; added dropdownOpen state and dropdownRef for outside-click detection; desktop actions section now conditionally renders avatar trigger + dropdown when authenticated (full name/email header, Dashboard/My Rentals/My Listings links, Logout button) or the Sign In link when not; mobile menu section now shows avatar + name + inline nav links + Logout when authenticated, or Sign In link when not. The onOpenListItemModal prop and 'List Your Item' button are preserved in both desktop and mobile. npx tsc -b --noEmit: zero errors. npm run build: succeeded (1948 modules, no type errors)."
+}

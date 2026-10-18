@@ -1,0 +1,7 @@
+{
+  "task_id": "task-auth-dashboard",
+  "task_description": "Implement post-authentication routing and state: Auth Context with localStorage persistence, ProtectedRoute, smart redirect on SignIn, authenticated profile dropdown in Navbar, and a full dark-themed Dashboard page with My Bookings and My Equipment tabs.",
+  "status": "completed",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}

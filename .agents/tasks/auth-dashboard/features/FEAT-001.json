@@ -1,0 +1,26 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Auth foundation: extend types, create AuthContext with localStorage persistence, create ProtectedRoute, rewire BrowserRouter to main.tsx (Option A — simpler), and update App.tsx to add the /dashboard protected route.",
+  "status": "completed",
+  "steps": [
+    "Step 1 — Extend src/types/index.ts: append AuthUser interface { id: string; name: string; email: string; avatarInitials: string; } and Booking, EquipmentItem, IncomingRequest interfaces exactly as specified in auth-plan.md. Do not remove or alter existing types.",
+    "Step 2 — Create src/context/AuthContext.tsx: define AuthContextValue type { user: AuthUser | null; isAuthenticated: boolean; login: (email: string, password: string) => Promise<void>; logout: () => void; intendedPath: string | null; setIntendedPath: (path: string | null) => void; }. Use createContext<AuthContextValue | null>(null). Hydrate from localStorage key 'mender_auth_user' on mount (JSON.parse in try/catch, cast as AuthUser). login() sets hardcoded user {id:'1', name:'Amina Kebede', email: <provided>, avatarInitials:'AK'} after 500ms Promise delay and saves to localStorage. logout() clears state, removes localStorage item, calls navigate('/') — safe because AuthProvider is inside BrowserRouter. useAuth() throws if ctx is null. Export AuthProvider and useAuth.",
+    "Step 3 — Create src/components/ProtectedRoute.tsx: import useAuth, useLocation, Navigate, Outlet from react-router-dom. If !auth.isAuthenticated: call auth.setIntendedPath(location.pathname), return <Navigate to='/signin' replace />. Otherwise return <Outlet />.",
+    "Step 4 — Update src/main.tsx: import BrowserRouter from react-router-dom, import AuthProvider from @/context/AuthContext. Wrap render as <StrictMode><BrowserRouter><AuthProvider><App /></AuthProvider></BrowserRouter></StrictMode>.",
+    "Step 5 — Update src/App.tsx: remove BrowserRouter import and wrapper element (Router is now in main.tsx). Import ProtectedRoute from @/components/ProtectedRoute, import DashboardPage from @/pages/DashboardPage. Add <Route element={<ProtectedRoute />}><Route path='dashboard' element={<DashboardPage />} /></Route> inside the Layout route. Keep all other routes and the SignUpPlaceholder inline component exactly as they are. DashboardPage does not exist yet — create an empty placeholder export (just a <div>Dashboard coming</div>) so the import resolves and the build passes."
+  ],
+  "acceptance_criteria": [
+    "npx tsc -b --noEmit produces zero errors after all steps complete",
+    "npm run build succeeds with no errors",
+    "Navigating to /dashboard in the browser redirects to /signin (ProtectedRoute working)",
+    "After sign in, navigating to /dashboard renders without crash",
+    "Auth state persists across page refresh (localStorage hydration working)"
+  ],
+  "verification": [
+    "npx tsc -b --noEmit",
+    "npm run build"
+  ],
+  "blocked_reason": null,
+  "findings": "No git repository found in the workspace — commit step was skipped. TypeScript strict mode passed cleanly with no quirks. The _password parameter in login() was prefixed with underscore to satisfy noUnusedParameters since the mock implementation ignores the password value. hydrateUser() is defined as a plain function (not arrow) and passed as initializer to useState to avoid running on every render. BrowserRouter successfully moved to main.tsx; AuthProvider sits inside it so useNavigate() is safe in the provider."
+}
